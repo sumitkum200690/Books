@@ -1,0 +1,79 @@
+JAVA8
+Interfaces with changes: static methods, default methods, functional Interfaces
+Default methods
+1)	Prior to Java 7, we could have only method declarations in the interfaces. But from Java 8, we can have default methods and static methods in the interfaces.
+2)	use “default” keyword with the method signature.
+public interface Interface1 {
+ 
+    void method1(String str);
+     
+    default void log(String str){
+        System.out.println("I1 logging::"+str);
+        print(str);
+    }
+}
+3)	With the default methods, the diamond problem would arise for interfaces too. To avoid this 
+In java8 it is mandatory to override “same name method of two or more interface” with 
+@Override annotation.
+public interface Interface2 { 
+    void method2();     
+    default void log(String str){
+        System.out.println("I2 logging::"+str);
+    } 
+}
+•	class that is implementing both Interface1 and Interface2 will be:
+
+public class MyClass implements Interface1, Interface2 {
+     @Override
+    public void method2() {
+    } 
+   @Override
+    public void method1(String str) {
+    }
+    @Override
+    public void log(String str){
+        System.out.println("MyClass logging::"+str);
+        Interface1.print("abc");
+    }      } 
+
+Advantages: 
+1)	Help us in removing base implementation classes.
+2)	One of the major reasons for introducing default methods is to enhance the Collections API in Java 8 to support lambda expressions.
+Interface static methods
+•	Static methods are similar to default methods except that we can’t override them in the implementation classes.
+•	This feature helps us in avoiding undesired results in case of poor implementation in child classes.
+
+Example:
+public interface MyData {
+    default void print(String str) {
+        if (!isNull(str))
+            System.out.println("MyData Print::" + str);
+  }
+ static boolean isNull(String str) {
+        System.out.println("Interface Null Check"); 
+        return str == null ? true : "".equals(str) ? true : false;
+    }
+}
+	implementation class that is having isNull() method with poor implementation.
+public class MyDataImpl implements MyData {
+     public boolean isNull(String str) {    //  it’s not overriding the interface method
+        System.out.println("Impl Null Check");
+         return str == null ? true : false;
+    }     
+    public static void main(String args[]){
+        MyDataImpl obj = new MyDataImpl();
+        obj.print("");
+        obj.isNull("abc");
+    }
+}
+	if we will add @Override annotation to the isNull() method, it will result in compiler error.
+
+Advantages:
+	Interface static methods are part of interface, we can’t use it for implementation class objects.
+	Helps us in providing security by not allowing implementation classes to override them.
+	We can use static interface methods to remove utility classes such as Collections and move all of it’s static methods to the corresponding interface, that would be easy to find and use.
+
+Functional Interfaces:
+          An interface with exactly one abstract method is known as Functional Interface.
+•	New annotation @FunctionalInterface has been introduced to mark an interface as Functional Interface. @FunctionalInterface annotation is a facility to avoid accidental addition of abstract methods in the functional interfaces. 
+•	Functional interfaces are long awaited and much sought out feature of Java 8 because it enables us to use lambda expressions to instantiate them. A new package java.util.function with bunch of functional interfaces is added to provide target types for lambda expressions and method references.
